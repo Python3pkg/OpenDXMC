@@ -345,7 +345,7 @@ class VolumeViewManager(QtGui.QWidget):
 
         button_icon = QtGui.QIcon(os.path.join(os.path.dirname(__file__), 'copy_icon.png'))
 
-        for name, wid3d in volume_scenes.items():
+        for name, wid3d in list(volume_scenes.items()):
             enable_vrt_button.toggled.connect(wid3d.set_showing)
             wid = QtGui.QWidget()
             wid.setVisible(False)
@@ -413,13 +413,13 @@ class ViewController(QtCore.QObject):
                           'dens': View3D(array='density', lut_name='gist_earth', dim_scale=True, custom_data_range=(.5, 2.4), smoothness=.5, magic_number = 50),
                           'planning': View3D(array='ctarray', lut_name='gist_earth', dim_scale=False, custom_data_range=(-200, 700), smoothness=.5, magic_number=50)}
 
-        for name, scene in self.scenes.items():
+        for name, scene in list(self.scenes.items()):
             # connecting scenes to request array slot
             scene.update_index.connect(self.update_index)
             scene.request_array.connect(database_interface.request_view_array)
             database_interface.send_view_array.connect(scene.set_requested_array)
 
-        for name, glwidget in self.glwidgets.items():
+        for name, glwidget in list(self.glwidgets.items()):
             # connecting scenes to request array slot
             glwidget.request_array.connect(database_interface.request_view_array_bytescaled)
             database_interface.send_view_array_bytescaled.connect(glwidget.set_requested_array)
@@ -445,13 +445,13 @@ class ViewController(QtCore.QObject):
     def set_simulation_properties(self, data_dict):
         if data_dict.get('name', '') != self.current_simulation:
             return
-        for scene in self.scenes.values():
+        for scene in list(self.scenes.values()):
             scene.set_metadata(data_dict)
         if data_dict['is_phantom']:
-            for glwid in self.glwidgets.values():
+            for glwid in list(self.glwidgets.values()):
                 glwid.set_metadata(data_dict)
         else:
-            for glwid in [value for key, value in self.glwidgets.items() if key != 'dens']:
+            for glwid in [value for key, value in list(self.glwidgets.items()) if key != 'dens']:
                 glwid.set_metadata(data_dict)
         self.selectScene('planning')
         self.update_index(self.current_index)
@@ -473,7 +473,7 @@ class ViewController(QtCore.QObject):
     def selectViewOrientation(self):
         self.current_view_orientation += 1
         self.current_view_orientation %= 3
-        for scene in self.scenes.values():
+        for scene in list(self.scenes.values()):
             scene.set_view_orientation(self.current_view_orientation, self.current_index)
         self.update_index(self.current_index)
         self.graphicsview.fitInView(self.graphicsview.sceneRect(), QtCore.Qt.KeepAspectRatio)
@@ -513,7 +513,7 @@ class ViewController(QtCore.QObject):
         menu_widget.addAction(orientation_action)
 
         sceneSelect = SceneSelectGroup(wid2)
-        for scene_name in self.scenes.keys():
+        for scene_name in list(self.scenes.keys()):
             sceneSelect.addAction(scene_name)
         sceneSelect.scene_selected.connect(self.selectScene)
 

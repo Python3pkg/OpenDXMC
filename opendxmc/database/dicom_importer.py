@@ -175,9 +175,9 @@ def import_ct_series(paths, import_scaling=(2, 2, 2)):
                 logger.debug("Not imported: {0} -Not a CT image:{1}".format(p, sop_class_uid))
 
     logger.info("Importing {0} CT series with total {1} images".format(
-                len(series), sum([len(x) for x in series.values()])))
+                len(series), sum([len(x) for x in list(series.values())])))
 
-    for name, series_paths in series.items():
+    for name, series_paths in list(series.items()):
 
         if len(series_paths) < 2:
             logger.info('Image series {} is skipped since it contains less than 2 images.'.format(name))
@@ -233,7 +233,7 @@ def import_ct_series(paths, import_scaling=(2, 2, 2)):
                        'sdd',
                        'detector_width',
                        ]
-        for key, tag in tag_key.items():
+        for key, tag in list(tag_key.items()):
             try:
                 dc[tag].value
             except KeyError:

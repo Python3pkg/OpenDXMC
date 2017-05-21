@@ -90,7 +90,7 @@ ARRAY_TEMPLATES = {
 
 # Generating a recarray for SIMULATION_DESCRIPTION to insert in database
 DESCRIPTION_RECARRAY = np.array([(k, v[2], v[3], v[4], v[5])
-                                 for k, v in PROPETIES_DICT_TEMPLATE.items()],
+                                 for k, v in list(PROPETIES_DICT_TEMPLATE.items())],
                                 dtype=[('name', 'a64'), ('volatale', np.bool),
                                        ('editable', np.bool),
                                        ('description', 'a128'), ('priority', np.int)]).view(np.recarray)
@@ -98,7 +98,7 @@ DESCRIPTION_RECARRAY = np.array([(k, v[2], v[3], v[4], v[5])
 def SIMULATION_DTYPE():
     d = {'names': [],
          'formats': []}
-    for key, value in PROPETIES_DICT_TEMPLATE.items():
+    for key, value in list(PROPETIES_DICT_TEMPLATE.items()):
         d['names'].append(key)
         d['formats'].append(value[1])
     return np.dtype(d)
@@ -308,7 +308,7 @@ class Database(object):
 
         self.set_simulation_metadata(properties)
 
-        for key, value in array_dict.items():
+        for key, value in list(array_dict.items()):
             self.set_simulation_array(properties['name'], value, key)
 
         logger.info('Successfully wrote simulation {} to database'.format(properties['name']))
@@ -409,7 +409,7 @@ class Database(object):
                     logger.debug('Could not update simulation {}, not allowed when MC is running'.format(properties['name']))
                     self.close()
                     return
-                for key, value in properties.items():
+                for key, value in list(properties.items()):
                     if key in meta_table.colnames:
                         row[key] = value
                 row.update()
@@ -417,7 +417,7 @@ class Database(object):
                 breaker = True
         if not breaker:
             row = meta_table.row
-            for key, value in properties.items():
+            for key, value in list(properties.items()):
                 row[key] = value
             row.append()
         meta_table.flush()
@@ -427,7 +427,7 @@ class Database(object):
 
     def set_simulation_array(self, name, array, array_name):
         if array_name not in ARRAY_TEMPLATES:
-            logger.debug('Not allowed to write array {0} for simulation {1}. Allowed arrays are {2}'.format(array_name, name, ARRAY_TEMPLATES.keys()))
+            logger.debug('Not allowed to write array {0} for simulation {1}. Allowed arrays are {2}'.format(array_name, name, list(ARRAY_TEMPLATES.keys())))
             return
         if array is None:
             logger.debug('Not allowed to write array {0} for simulation {1}. Array is None'.format(array_name, name))
@@ -576,7 +576,7 @@ class Database(object):
 
         properties = self.get_simulation_metadata(name)
         arrays = {}
-        for key in ARRAY_TEMPLATES.keys():
+        for key in list(ARRAY_TEMPLATES.keys()):
             if not ARRAY_TEMPLATES[key][1]:
                 try:
                     arrays[key] = self.get_simulation_array(name, key)
@@ -780,21 +780,21 @@ class Validator(object):
         self._pt = PROPETIES_DICT_TEMPLATE
         self._at = ARRAY_TEMPLATES
 
-        self._props = {key: value[0] for key, value in self._pt.items()}
-        self._arrays = {key: None for key in self._at.keys()}
+        self._props = {key: value[0] for key, value in list(self._pt.items())}
+        self._arrays = {key: None for key in list(self._at.keys())}
 
     def reset(self):
         self.set_data(None, True)
 
     def set_data(self, props=None, reset=True):
         if reset:
-            self._props = {key: value[0] for key, value in self._pt.items()}
-            self._arrays = {key: None for key in self._at.keys()}
+            self._props = {key: value[0] for key, value in list(self._pt.items())}
+            self._arrays = {key: None for key in list(self._at.keys())}
         valid_attrs = list(self._pt.keys()) + list(self._at.keys())
         if props is not None:
             if reset:
                 assert 'name' in props
-            prop_list = [(key, value) for key, value in props.items()]
+            prop_list = [(key, value) for key, value in list(props.items())]
             prop_list.sort(key=lambda x: self._pt[x[0]][5] if x[0] in self._pt else 0)
             for key, value in prop_list:
                 if key in valid_attrs:
@@ -803,7 +803,7 @@ class Validator(object):
                     logger.debug('Error in propety {0} for simulation {1}'.format(key, props['name']))
 
     def get_data(self):
-        return self._props, {key: value for key, value in self._arrays.items() if value is not None}
+        return self._props, {key: value for key, value in list(self._arrays.items()) if value is not None}
 
     def string_validator(self, value, strict=False):
         if isinstance(value, bytes):
@@ -838,7 +838,7 @@ class Validator(object):
         if isinstance(value, dict):
             value_rec = np.recarray((len(value),),
                                     dtype=self._at[name][0])
-            for ind, item in enumerate(value.items()):
+            for ind, item in enumerate(list(value.items())):
                 value_rec[ind] = item
             return value_rec
         elif isinstance(value, np.ndarray):

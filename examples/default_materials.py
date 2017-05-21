@@ -20,7 +20,7 @@ def cone_beam_example():
     materials = list(materials_dict.values())
     print('Listing imported materials:')
     for ind, m in enumerate(materials):
-        print('{0}: Name: {1}, Density {2}[g/cm3]'.format(ind, m.name, m.density))
+        print(('{0}: Name: {1}, Density {2}[g/cm3]'.format(ind, m.name, m.density)))
 
 
     # lets create a water box surronded by air, we need a numpy array of
@@ -130,7 +130,7 @@ def cone_beam_example():
     t0 = time.clock()
     print('Starting simulation')
     engine.run(beam, n_histories, simulation)
-    print('Simulated {0} photons in {1} seconds'.format(n_histories, time.clock()-t0))
+    print(('Simulated {0} photons in {1} seconds'.format(n_histories, time.clock()-t0)))
 
     # let's add one more beam to the simulation
     source_position_2 = np.array([0, -20, 0], dtype='float64')
@@ -148,7 +148,7 @@ def cone_beam_example():
 
 
     engine.run(beam2, n_histories, simulation)
-    print('Simulated another {0} photons in {1} seconds'.format(n_histories, time.clock()-t0))
+    print(('Simulated another {0} photons in {1} seconds'.format(n_histories, time.clock()-t0)))
 
     #cleanup of simulation and sources, the monte carlo engine will leak
     # memory if these functions are not called

@@ -40,7 +40,7 @@ def read_phantoms(file_list):
         if zipfile.is_zipfile(fil):
             logger.debug('Attempting to unzip file {}'.format(path))
             with zipfile.ZipFile(path) as fz:
-                for phantom, values in phantoms.items():
+                for phantom, values in list(phantoms.items()):
                     try:
                         path = os.path.abspath(fz.extract(values[0], path=os.path.dirname(path)))
                     except:
@@ -50,7 +50,7 @@ def read_phantoms(file_list):
                         unzipped = True
                         break
         filename = os.path.basename(path)
-        for key, value in phantoms.items():
+        for key, value in list(phantoms.items()):
             if filename == value[0]:
                 try:
                     sim = read_voxels(path, key, *value[1:])

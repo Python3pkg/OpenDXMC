@@ -351,7 +351,7 @@ class DatabaseInterface(QtCore.QObject):
     def write_simulation_arrays(self, name, array_dict):
         logger.debug('Request database to write arrays.')
         self.database_busy.emit(True)
-        for arr_name, array in array_dict.items():
+        for arr_name, array in list(array_dict.items()):
             self.__db.set_simulation_array(name, array, arr_name)
         self.database_busy.emit(False)
 
@@ -838,9 +838,9 @@ class PropertiesEditModel(QtGui.QStandardItemModel):
                 parent_items[key] = parent_item
 
 
-        for key, value in propeties_dict.items():
+        for key, value in list(propeties_dict.items()):
             parent_ind = PROPETIES_DICT_TEMPLATE[key][6]
-            if parent_ind in parent_items.keys():
+            if parent_ind in list(parent_items.keys()):
                 parent_item = parent_items[parent_ind]
             else:
                 parent_item = QtGui.QStandardItem(PROPETIES_DICT_TEMPLATE_GROUPING.get(parent_ind, 'Unknown'))
@@ -855,7 +855,7 @@ class PropertiesEditModel(QtGui.QStandardItemModel):
             item.setEditable(False)
             parent_item.appendRow([item, PropertiesEditModelItem(key, value)])
 
-        for parent_item in parent_items.values():
+        for parent_item in list(parent_items.values()):
             parent_item.sortChildren(0)
 #            parent_item.setChild(0, 0, item)
 #            parent_item.setChild(0, 1, PropertiesEditModelItem(key, value))
@@ -898,7 +898,7 @@ class PropertiesEditModel(QtGui.QStandardItemModel):
 
     def test_unsaved_changes(self):
         keys_for_deletion = []
-        for key, value in self.unsaved_items.items():
+        for key, value in list(self.unsaved_items.items()):
             if isinstance(value, np.ndarray):
                 if np.sum(np.nonzero(value - getattr(self.validator, key))) == 0:
                     keys_for_deletion.append(key)
@@ -1118,7 +1118,7 @@ class OrganDoseModel(QtCore.QAbstractTableModel):
             self.layoutAboutToBeChanged.emit()
             self._data = {}
             self._data_keys = []
-            for key, value in self.organ_map.items():
+            for key, value in list(self.organ_map.items()):
                 self._data[key] = [value, self.organ_material_map.get(key, 'Unknown'), 0, 0]
                 self._data_keys.append(key)
             self.dose_z_lenght = list(range(self.organ_array.shape[0]))

@@ -111,7 +111,7 @@ def prepare_geometry_from_organ_array(organ, organ_material_map, scale, material
                                               value_is_string=True)
         #testing if we have the materials we need
         material_names = {m.name: m for m in materials}
-        for value in organ_material_map.values():
+        for value in list(organ_material_map.values()):
             if not value in material_names:
                 raise ValueError('Phantom requires missing material {}'.format(value))
 
@@ -142,7 +142,7 @@ def prepare_geometry_from_organ_array(organ, organ_material_map, scale, material
 
 
         # reversing material_map
-        material_map = {key: value for value, key in material_map.items()}
+        material_map = {key: value for value, key in list(material_map.items())}
         return material_map, material_array.astype('int32'), density_array
 
 def attinuation_to_ct_numbers(material_attinuations, air_key, water_key):
@@ -150,7 +150,7 @@ def attinuation_to_ct_numbers(material_attinuations, air_key, water_key):
     b = -a * material_attinuations[water_key]
     atts = []
 
-    for key, att in material_attinuations.items():
+    for key, att in list(material_attinuations.items()):
         HU = a * att + b
         if HU > 1000:
             HU=1000
@@ -210,7 +210,7 @@ def prepare_geometry_from_ct_array(ctarray, scale ,specter, materials):
 
         # getting a list of attinuation
         material_HU_list = [(key, (att / material_att[water_key] - 1.)*1000.)
-                            for key, att in material_att.items()]
+                            for key, att in list(material_att.items())]
         material_HU_list = attinuation_to_ct_numbers(material_att, air_key, water_key)
         material_HU_list.sort(key=lambda x: x[1])
         HU_bins = (np.array(material_HU_list)[:-1, 1] +
@@ -274,7 +274,7 @@ def ct_runner_validate_simulation(materials, simulation, ctarray=None, organ=Non
 
     # Testing for required materials if the simulation have a material_map
     material_names = [m.name for m in materials]
-    for m_name in material_map.values():
+    for m_name in list(material_map.values()):
         if m_name not in material_names:
             raise ValueError('Provided materials are not in ct study')
 
